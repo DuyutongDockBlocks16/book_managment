@@ -4,7 +4,7 @@ info:
   title: Book Management API
   version: 1.0.0
 servers:
-- url: http://api.example.com/v1
+- url: http://34.88.191.42:8080/v1
 paths:
   /book:
     post:
@@ -149,7 +149,7 @@ components:
     Book:
       example:
         author: author
-        isbn: isbn
+        isbn: 1-4028-9462-7
         name: name
         rating: 0.40041409523050575
         id: id
