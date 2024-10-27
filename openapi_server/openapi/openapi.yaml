@@ -1,0 +1,217 @@
+openapi: 3.0.0
+info:
+  description: API for managing books with CRUD operations.
+  title: Book Management API
+  version: 1.0.0
+servers:
+- url: http://api.example.com/v1
+paths:
+  /book:
+    post:
+      operationId: create_book
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+          description: Book successfully created
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unprocessable entity
+      summary: Create a new book
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /book/{book_id}:
+    delete:
+      operationId: delete_book
+      parameters:
+      - description: ID of the book to delete
+        explode: false
+        in: path
+        name: book_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: No Content
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Found
+      summary: Delete a book by ID
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+    get:
+      operationId: get_book_by_id
+      parameters:
+      - description: ID of the book to retrieve
+        explode: false
+        in: path
+        name: book_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+          description: A single book
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Found
+      summary: Retrieve a book by ID
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+    put:
+      operationId: update_book
+      parameters:
+      - description: ID of the book to update
+        explode: false
+        in: path
+        name: book_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+          description: Book successfully updated
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Found
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unprocessable entity
+      summary: Update a book by ID
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+  /books:
+    get:
+      operationId: get_books
+      parameters:
+      - description: Filter books by author name
+        explode: true
+        in: query
+        name: author
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Books'
+          description: A list of books
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not Found
+      summary: Retrieve a list of books
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+components:
+  schemas:
+    Book:
+      example:
+        author: author
+        isbn: isbn
+        name: name
+        rating: 0.40041409523050575
+        id: id
+        publish_date: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          readOnly: true
+          title: id
+          type: string
+        name:
+          maxLength: 50
+          title: name
+          type: string
+        author:
+          maxLength: 50
+          title: author
+          type: string
+        isbn:
+          maxLength: 13
+          minLength: 13
+          title: isbn
+          type: string
+        rating:
+          maximum: 5
+          minimum: 0
+          title: rating
+          type: number
+        publish_date:
+          format: date-time
+          title: publish_date
+          type: string
+      required:
+      - author
+      - isbn
+      - name
+      - publish_date
+      - rating
+      title: Book
+      type: object
+    Books:
+      items:
+        $ref: '#/components/schemas/Book'
+      type: array
+    Success:
+      example:
+        id: id
+        message: message
+      properties:
+        message:
+          title: message
+          type: string
+        id:
+          title: id
+          type: string
+      title: Success
+      type: object
+    Error:
+      example:
+        message: message
+      properties:
+        message:
+          title: message
+          type: string
+      title: Error
+      type: object
