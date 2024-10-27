@@ -152,7 +152,6 @@ components:
         isbn: 1-4028-9462-7
         name: name
         rating: 0.40041409523050575
-        id: id
         publish_date: 2000-01-23T04:56:07.000+00:00
       properties:
         id:
