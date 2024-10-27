@@ -1,216 +1,199 @@
+# java -jar openapi-generator-cli.jar generate -i openapi.yaml -g nodejs-express-server -o test
 openapi: 3.0.0
 info:
-  description: API for managing books with CRUD operations.
   title: Book Management API
+  description: Details of Book Management
   version: 1.0.0
-servers:
-- url: http://34.88.191.42:8080/v1
 paths:
   /book:
     post:
-      operationId: create_book
       requestBody:
+        description: Create a new book
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Book'
-        required: true
       responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Success'
+        '201':
           description: Book successfully created
-        "422":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Unprocessable entity
-      summary: Create a new book
-      x-openapi-router-controller: openapi_server.controllers.default_controller
-  /book/{book_id}:
-    delete:
-      operationId: delete_book
-      parameters:
-      - description: ID of the book to delete
-        explode: false
-        in: path
-        name: book_id
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "204":
-          description: No Content
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Not Found
-      summary: Delete a book by ID
-      x-openapi-router-controller: openapi_server.controllers.default_controller
-    get:
-      operationId: get_book_by_id
-      parameters:
-      - description: ID of the book to retrieve
-        explode: false
-        in: path
-        name: book_id
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Book'
-          description: A single book
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: Not Found
-      summary: Retrieve a book by ID
-      x-openapi-router-controller: openapi_server.controllers.default_controller
-    put:
-      operationId: update_book
-      parameters:
-      - description: ID of the book to update
-        explode: false
-        in: path
-        name: book_id
-        required: true
-        schema:
-          type: string
-        style: simple
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Book'
-        required: true
-      responses:
-        "200":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Success'
-          description: Book successfully updated
-        "404":
+        '422':
+          description: err
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Not Found
-        "422":
+        'default':
+          description: err
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Unprocessable entity
-      summary: Update a book by ID
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+
   /books:
     get:
-      operationId: get_books
       parameters:
-      - description: Filter books by author name
-        explode: true
-        in: query
-        name: author
-        required: false
-        schema:
-          type: string
-        style: form
+        - in: query
+          name: author
+          schema:
+           type: string
+           default: author
+      description: Get a list of books
       responses:
-        "200":
+        '200':
+          description: List of books
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Books'
-          description: A list of books
-        "404":
+        '404':
+          description: err
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: Not Found
-      summary: Retrieve a list of books
-      x-openapi-router-controller: openapi_server.controllers.default_controller
+        'default':
+          description: err
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /book/{book_id}:
+    get:
+      description: specific book by ID
+      parameters:
+        - name: book_id
+          in: path
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+      responses:
+        '200':
+          description: Here is the Book by ID
+        '404':
+          description: err
+        'default':
+          description: err
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update a specific book by ID
+      parameters:
+        - in: path
+          name: book_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+      responses:
+        '200':
+          description: Book successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '404':
+          description: err
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: err
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: err
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a specific book by ID
+      parameters:
+        - in: path
+          name: book_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: err
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        'default':
+          description: err
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 components:
   schemas:
     Book:
-      example:
-        author: author
-        isbn: 1-4028-9462-7
-        name: name
-        rating: 0.40041409523050575
-        publish_date: 2000-01-23T04:56:07.000+00:00
+      type: object
       properties:
         id:
+          type: string
           readOnly: true
-          title: id
-          type: string
         name:
-          maxLength: 50
-          title: name
           type: string
+          maxLength: 50
         author:
+          type: string
           maxLength: 50
-          title: author
-          type: string
         isbn:
-          maxLength: 13
+          type: string
           minLength: 13
-          title: isbn
-          type: string
+          maxLength: 13
         rating:
-          maximum: 5
-          minimum: 0
-          title: rating
           type: number
+          minimum: 0
+          maximum: 5
         publish_date:
-          format: date-time
-          title: publish_date
           type: string
+          format: date-time
       required:
-      - author
-      - isbn
-      - name
-      - publish_date
-      - rating
-      title: Book
-      type: object
+          - id
+          - name
+          - author
+          - isbn
+          - rating
+          - publish_date
+
+
     Books:
+      type: array
       items:
         $ref: '#/components/schemas/Book'
-      type: array
+
     Success:
-      example:
-        id: id
-        message: message
+      type: object
       properties:
         message:
-          title: message
           type: string
         id:
-          title: id
           type: string
-      title: Success
-      type: object
+
     Error:
-      example:
-        message: message
+      type: object
       properties:
         message:
-          title: message
           type: string
-      title: Error
-      type: object
